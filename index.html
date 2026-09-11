@@ -688,9 +688,43 @@ function buildPDF(nome, cpf) {
   txt('São Paulo, ' + dateStr + '.', {center:true}); sp(14);
 
   // ── Assinaturas ──
-  checkY(40);
+  checkY(55);
   const sigX = PW - ML - 72;
-  const lineY = y + 10;
+
+  // Carimbo eletrônico do colaborador (centralizado)
+  const stampW = 90;
+  const stampH = 28;
+  const stampX = (PW - stampW) / 2;
+  const stampY = y;
+
+  // Borda externa do carimbo
+  doc.setDrawColor(17,24,39); doc.setLineWidth(0.8);
+  doc.setFillColor(245,248,255);
+  doc.roundedRect(stampX, stampY, stampW, stampH, 2, 2, 'FD');
+
+  // Linha interna de destaque
+  doc.setFillColor(17,24,39);
+  doc.rect(stampX, stampY, stampW, 5.5, 'F');
+
+  doc.setFontSize(6.5); doc.setFont('helvetica','bold'); doc.setTextColor(245,200,0);
+  doc.text('ASSINADO ELETRONICAMENTE', stampX + stampW/2, stampY + 3.8, {align:'center'});
+
+  doc.setTextColor(17,24,39);
+  doc.setFontSize(8); doc.setFont('helvetica','bold');
+  const nomeLines = doc.splitTextToSize(nome.toUpperCase(), stampW - 6);
+  doc.text(nomeLines, stampX + stampW/2, stampY + 10, {align:'center'});
+
+  const nomeH = nomeLines.length * 4;
+  doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(55,65,81);
+  doc.text('CPF: ' + cpf, stampX + stampW/2, stampY + 10 + nomeH + 1, {align:'center'});
+
+  const ts2 = now.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
+  doc.setFontSize(6); doc.setFont('helvetica','normal'); doc.setTextColor(107,114,128);
+  doc.text(ts2, stampX + stampW/2, stampY + stampH - 2, {align:'center'});
+
+  y += stampH + 4;
+
+  const lineY = y;
   doc.setDrawColor(17,24,39); doc.setLineWidth(0.4);
   doc.line(ML, lineY, ML+72, lineY);
   doc.line(sigX, lineY, PW-ML, lineY);
